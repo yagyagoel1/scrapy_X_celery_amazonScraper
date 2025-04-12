@@ -62,9 +62,9 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    "amazon_scraper.pipelines.AmazonScraperPipeline": 300,
-#}
+ITEM_PIPELINES = {
+   "amazon_scraper.pipelines.AmazonScraperPipeline": 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
@@ -86,13 +86,14 @@ ROBOTSTXT_OBEY = True
 #HTTPCACHE_DIR = "httpcache"
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = "scrapy.extensions.httpcache.FilesystemCacheStorage"
+FEEDS={
+    'results.json':{'format':'json',
+                    'overwrite':True}
+    
+}
 
+FEED_OVERWRITE=True
 # Set settings whose default value is deprecated to a future-proof value
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'
-ROBOTSTXT_OBEY = False
-DOWNLOAD_DELAY = 2  # seconds between each request
-RETRY_ENABLED = True
-RETRY_TIMES = 5
-RETRY_HTTP_CODES = [500, 502, 503, 504, 522, 524, 408]
+

@@ -10,4 +10,10 @@ from itemadapter import ItemAdapter
 
 class AmazonScraperPipeline:
     def process_item(self, item, spider):
+        adapter = ItemAdapter(item)
+        fields = adapter.field_names()
+        for field in fields:
+            if field =="name":
+                value = adapter.get(field)
+                adapter[field]=value.strip()
         return item
