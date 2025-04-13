@@ -31,3 +31,12 @@ def startScraping(key,payload:dataBody):
     print(task)
     return {"success":1,"message":"scraping started","taskId":str(task)}
 
+@app.get("/task/{task_id}")
+def get_task_status(task_id: str):
+    task = run_amazon_spider.AsyncResult(task_id)
+    if task.state == 'PENDING':
+        return {"status": "pending"}
+    elif task.state == 'SUCCESS':
+        return {"status": "completed"}
+    else:
+        return {"status": "failed", "error": str(task.info)}
