@@ -27,6 +27,7 @@ def startScraping(key,payload:dataBody):
     if key != os.getenv('KEY_TO_SCRAPE'):
         raise HTTPException(401,"Unauthorized")
     
-    run_amazon_spider.delay()
-    return {"success":1,"message":"scraping started"}
+    task= run_amazon_spider.delay(item = payload.item,pages=payload.noOfPages)
+    print(task)
+    return {"success":1,"message":"scraping started","taskId":str(task)}
 

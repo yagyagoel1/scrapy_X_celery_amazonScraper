@@ -16,13 +16,18 @@ class AmazonSpiderSpider(scrapy.Spider):
     # allowed_domains = ["www.amazon.in"]
     start_urls = ["https://www.amazon.in"]
 
+    def __init__(self, keyword="pendrive", pages=1, *args, **kwargs):
+        super(AmazonSpiderSpider, self).__init__(*args, **kwargs)
+        self.keyword = keyword if isinstance(keyword, list) else [keyword]
+        self.pages = int(pages)
+        
+        
     def start_requests(self):
-        keyword = ['pendrive']
-        n_pages = 1
-
-        for word in keyword:
-            for page in range(n_pages):
-                url = f'https://www.amazon.in/s?k={word}&page={page +1}'
+        print(self.keyword)
+        print(self.pages)
+        for word in self.keyword:
+            for page in range(self.pages):
+                url = f'https://www.amazon.in/s?k={word}&page={page + 1}'
                 yield scrapy.Request(get_scrapeops_url(url))
         
 
@@ -50,14 +55,14 @@ class AmazonSpiderSpider(scrapy.Spider):
         self.logger.info("Spider closed: %s", reason)
         try:
             
-            file_path="/app/amazon_scraper/results.json"
+            file_path=os.getenv('FILE_PATH_RESULT')
             
             bucket = os.getenv('AWS_BUCKET')
             if not bucket:
                 self.logger.error("AWS_BUCKET environment variable not set")
                 return
                 
-            filename = f"result_{time.strftime('%Y%m%d_%H%M%S')}.json"
+            filename = f"result_{self.keyword}_{time.strftime('%Y%m%d_%H%M%S')}.json"
             self.logger.info(f"Uploading {file_path} to S3 bucket {bucket} as {filename}")
             
             client.upload_file(
