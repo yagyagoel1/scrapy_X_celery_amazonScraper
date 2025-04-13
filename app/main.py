@@ -2,6 +2,7 @@ from fastapi import FastAPI,HTTPException
 from tasks import run_amazon_spider
 from dotenv import load_dotenv
 import os
+from .types import dataBody
 load_dotenv()
 
 app = FastAPI()
@@ -21,4 +22,11 @@ def startScraping(key):
 
 
 
+@app.post("/{key}")
+def startScraping(key,payload:dataBody):
+    if key != os.getenv('KEY_TO_SCRAPE'):
+        raise HTTPException(401,"Unauthorized")
+    
+    run_amazon_spider.delay()
+    return {"success":1,"message":"scraping started"}
 
