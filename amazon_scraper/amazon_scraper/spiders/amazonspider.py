@@ -49,56 +49,9 @@ class AmazonSpiderSpider(scrapy.Spider):
     def closed(self, reason):
         self.logger.info("Spider closed: %s", reason)
         try:
-            # Get current directory
-            current_dir = os.getcwd()
-            self.logger.info(f"Current working directory: {current_dir}")
             
-            # Try many different possible file paths
-            potential_paths = [
-                "results.json",                 # Current directory
-                "./results.json",               # Relative to current
-                f"{current_dir}/results.json",  # Absolute to current
-                "/app/results.json",            # Docker common path
-                "/app/amazon_scraper/results.json",  # Subdirectory
-                "/app/amazon_scraper/amazon_scraper/results.json",  # Deeper subdirectory
-                # Recursive search for results.json in current directory
-            ]
+            file_path="/app/amazon_scraper/results.json"
             
-            # Also search recursively for the file
-            for root, dirs, files in os.walk(current_dir):
-                if 'results.json' in files:
-                    potential_paths.append(os.path.join(root, 'results.json'))
-            
-            # Find first file that exists
-            file_path = None
-            for path in potential_paths:
-                if os.path.exists(path):
-                    file_path = path
-                    self.logger.info(f"Found results file at: {path}")
-                    break
-                    
-            if not file_path:
-                # List all files in current directory to help debug
-                self.logger.error(f"Results file not found. Tried: {potential_paths}")
-                self.logger.info(f"Files in current directory: {os.listdir(current_dir)}")
-                
-                # Try to find any .json files
-                json_files = []
-                for root, dirs, files in os.walk(current_dir):
-                    for file in files:
-                        if file.endswith('.json'):
-                            json_files.append(os.path.join(root, file))
-                
-                if json_files:
-                    self.logger.info(f"Found these JSON files: {json_files}")
-                    # Use the first JSON file found as fallback
-                    file_path = json_files[0]
-                    self.logger.info(f"Using {file_path} as fallback")
-                else:
-                    self.logger.error("No JSON files found anywhere in the directory tree")
-                    return
-                    
-            # Upload file to S3
             bucket = os.getenv('AWS_BUCKET')
             if not bucket:
                 self.logger.error("AWS_BUCKET environment variable not set")
@@ -116,6 +69,5 @@ class AmazonSpiderSpider(scrapy.Spider):
             
         except Exception as e:
             self.logger.error(f"Error uploading to S3: {str(e)}")
-            # Print full stack trace for better debugging
             import traceback
             self.logger.error(traceback.format_exc())
