@@ -16,7 +16,6 @@ Watch the full project demo and architecture walkthrough here:
 
 
 
-![Architecture Diagram](architecture.png)
 
 ---
 
